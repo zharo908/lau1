@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anímate!</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffecd9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative; /* Añadido para usar position absolute en el botón */
+        }
+
+        h1 {
+            color: #ff6f61;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff6f61;
+            color: #fff;
+            cursor: pointer;
+            margin-top: 10px; /* Modificado para reducir el espacio superior */
+        }
+
+        button#show-images-button {
+            padding: 15px 40px;
+            font-size: 24px;
+            background-color: #ff6f61;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            display: none; /* Ocultar inicialmente el botón "Ver Imágenes" */
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+        }
+
+        button#show-images-button::before {
+            content: '\2764'; /* Código del carácter corazón */
+            font-size: 36px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        img {
+            margin-top: 20px; /* Reducido el espacio superior de la imagen */
+            width: 200px;
+            height: auto;
+            border-radius: 50%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        img:hover {
+            transform: rotate(360deg);
+        }
+
+        .card {
+            background-color: #ffe6e6;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        #end-message {
+            display: none;
+            font-size: 48px;
+            color: #ff6f61;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Anímate Lau!</h1>
+        <div id="positive-message"></div>
+        <button onclick="showPositiveMessage()">Click aquí para leer otro mensaje</button>
+        <img id="happy-image" src="https://i.postimg.cc/RFdMFF4C/2a141c2a6fdfd5888de3f76c85e19d90.jpg" alt="Happy">
+        <div id="end-message"></div> <!-- Elemento para mostrar el mensaje final -->
+        <button id="show-images-button" onclick="showImageGallery()">Ver Imágenes</button>
+
+        <!-- Galería de imágenes -->
+        <div id="image-gallery" style="display:none;">
+            <div id="image-container"></div>
+            <div class="card">
+                <button id="next-button" onclick="showNextImage()">Siguiente Imagen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const positiveMessages = [
+            "Eres increíblemente valiosa y especial.",
+            "Hoy es un buen día para sonreír y disfrutar.",
+            "Tú tienes el poder de superar cualquier desafío.",
+            "Recuerda lo fuerte y maravillosa que eres.",
+            "Siempre encontrarás luz en tu camino.",
+            "Tu sonrisa ilumina cualquier lugar.",
+            "Cada paso que das te acerca a tus sueños.",
+            "El mundo es un lugar mejor con alguien como tú.",
+            "Tus posibilidades son infinitas, ¡créelo!",
+            "Nunca olvides lo extraordinaria que eres."
+        ];
+
+        const imageSources = [
+            {
+                src: "https://i.postimg.cc/RFbpK4Wm/IMG-20240419-WA0247.jpg",
+                message: "Quiero recordarte lo increíble que eres. Tu capacidad para enfrentar desafíos con valentía y tu disposición para levantarte cada vez que caes son cualidades admirables. Eres una persona extraordinaria con un corazón lleno de bondad y una mente llena de sueños. Que nunca se apague esa chispa que te hace tan especial. Recuerda siempre que mereces todo lo bueno que la vida tiene para ofrecer."
+            },
+            {
+                src: "https://i.postimg.cc/NMdHJ0ty/IMG-20240419-WA0250.jpg",
+                message: "En este mundo ajetreado, a veces olvidamos detenernos y apreciar la belleza que nos rodea. Pero cada vez que te veo, me recuerdas que la verdadera belleza radica en la forma en que tratas a los demás y cómo iluminas el día de quienes te rodean con tu presencia. Eres como un faro de positividad, guiando a otros hacia la felicidad. Nunca subestimes el impacto que tienes en el mundo."
+            },
+            {
+                src: "https://i.postimg.cc/Hx2TbS5H/IMG-20240419-WA0251.jpg",
+                message: "Tu risa es muy linda y contagiosa. Eres alguien que irradia energía positiva y amor, y eso es algo verdaderamente especial. No olvides que eres única y valiosa, y mereces todas las cosas buenas que te esperan en el camino. Mantén esa sonrisa radiante y nunca pierdas tu pasión por la vida."
+            },
+            {
+                src: "https://i.postimg.cc/V632rnZ1/IMG-20240419-WA0252.jpg",
+                message: "Quería recordarte lo increíble que eres. Tienes una fuerza interior que es impresionante y una capacidad de amar que es verdaderamente conmovedora. Cada día, enfrentas desafíos con determinación y perseverancia, y eso es digno de admiración. Eres un ejemplo viviente de lo que significa ser una persona auténtica y amorosa. No cambies nunca, porque el mundo necesita más personas como tú."
+            },
+            {
+                src: "https://i.postimg.cc/85D610NV/IMG-20240420-WA0011.jpg",
+                message: "Cada momento contigo es un tesoro que atesoro en mi corazón. Tu presencia es como un rayo de sol en un día lluvioso, iluminando incluso los momentos más oscuros. Tu dedicación, amor y bondad son cualidades que hacen del mundo un lugar mejor. No olvides nunca el impacto positivo que tienes en quienes te rodean. Eres un regalo para este mundo, y siempre mereces lo mejor."
+            }
+        ];
+
+        let currentImageIndex = 0;
+
+        function showPositiveMessage() {
+            const messageElement = document.getElementById('positive-message');
+            const endMessageElement = document.getElementById('end-message');
+            const showImagesButton = document.getElementById('show-images-button');
+            const randomIndex = Math.floor(Math.random() * positiveMessages.length);
+
+            if (positiveMessages.length > 0) {
+                messageElement.textContent = positiveMessages[randomIndex];
+                positiveMessages.splice(randomIndex, 1); // Eliminar mensaje mostrado
+            } else {
+                messageElement.textContent = "";
+                endMessageElement.textContent = "🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟"; // Mensaje final
+                endMessageElement.style.display = "block";
+                showImagesButton.style.display = "block"; // Mostrar botón "Ver Imágenes"
+                document.querySelector('button').style.display = "none"; // Ocultar botón "Click aquí para leer otro mensaje"
+            }
+        }
+
+        const happyImage = document.getElementById('happy-image');
+        happyImage.addEventListener('click', () => {
+            happyImage.src = 'https://i.postimg.cc/gk7dTQgJ/descarga.jpg';
+        });
+
+        function showImageGallery() {
+            const gallery = document.getElementById('image-gallery');
+            const imageContainer = document.getElementById('image-container');
+            const nextButton = document.getElementById('next-button');
+
+            gallery.style.display = 'block'; // Mostrar galería de imágenes inicialmente
+            showNextImage(); // Mostrar la primera imagen al abrir la galería
+
+            // Ocultar mensaje final y botón "Ver Imágenes"
+            document.getElementById('end-message').style.display = 'none';
+            document.getElementById('show-images-button').style.display = 'none';
+        }
+
+        function showNextImage() {
+            const imageContainer = document.getElementById('image-container');
+            const nextButton = document.getElementById('next-button');
+
+            if (currentImageIndex < imageSources.length) {
+                const imageSource = imageSources[currentImageIndex];
+                const imageElement = document.createElement('img');
+                imageElement.src = imageSource.src;
+                imageElement.style.width = '300px'; // Ajustar el tamaño de la imagen si es necesario
+                imageElement.style.marginTop = '20px';
+                imageContainer.innerHTML = ''; // Limpiar el contenedor de imágenes
+                imageContainer.appendChild(imageElement);
+
+                // Crear la carta con el mensaje lindo
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+                cardElement.innerHTML = `<button onclick="showPositiveMessageForImage('${imageSource.message}')">Leer mensaje lindo</button>`;
+                imageContainer.appendChild(cardElement);
+
+                currentImageIndex++;
+            } else {
+                // Ocultar botón "Siguiente Imagen" al finalizar las imágenes
+                nextButton.style.display = 'none';
+            }
+        }
+
+        function showPositiveMessageForImage(message) {
+            alert(message); // Mostrar el mensaje lindo correspondiente a la imagen
+        }
+
+        // Mostrar un mensaje al cargar la página
+        showPositiveMessage();
+    </script>
+</body>
+</html>
